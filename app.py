@@ -452,6 +452,18 @@ async def on_ready():
 # on message event
 @client.event
 async def on_message(message: discord.Message):
+    
+    
+    # Define the ID of the channel where the bot should respond
+    
+    allowed_channel_id = env["DISCORD_CHANNEL_ID"]
+
+    # Check if the message is in the allowed channel
+    if str(message.channel.id) != allowed_channel_id:
+        # If not, ignore the message and do nothing
+        return
+   
+    
     # print recieved messages
     print("recieved", message.content)
 
