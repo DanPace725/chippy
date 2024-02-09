@@ -3,8 +3,8 @@
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "chippy-demo"
-primary_region = "sjc"
+app = "gandalf02"
+primary_region = "sea"
 
 [mounts]
   source = "chippy_data"

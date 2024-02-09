@@ -159,16 +159,16 @@ async def chat_completion(messages):
 
 
 # returns text completion (old model, deprecated)
-def text_completion(message, max_tokens=2048):
+"""def text_completion(message, max_tokens=2048):
     response = openai.Completion.create(
         model=env["TEXT_MODEL"], prompt=message, max_tokens=max_tokens
     )
-    return response["choices"][0]["text"]
+    return response["choices"][0]["text"]"""
 
 
 # stabillity ai
 # returns a filepath of an image
-def generate_stability_image(text_prompt):
+"""def generate_stability_image(text_prompt):
     IMAGE_PROMPT = "image of"
     IMAGE_PROMPTS = [f"{i.replace('-', ' ')}" for i in STABILITY_STYLE_PRESETS]
 
@@ -236,11 +236,11 @@ def generate_stability_image(text_prompt):
         with open(output_filename, "wb") as f:
             f.write(base64.b64decode(image["base64"]))
 
-    return output_filename
+    return output_filename"""
 
 # openai DALLE3
 # returns a filepath of an image
-def generate_openai_image(text_prompt):
+"""def generate_openai_image(text_prompt):
   
     # openai DALLE3
   # returns a url of an image
@@ -288,7 +288,7 @@ async def get_image(prompt):
         
     if env["SAVE_IMAGES"] == "False":
       os.remove(output_filename)
-    return file
+    return file"""
 
 
 # DISCORD FUNCTIONS
@@ -438,7 +438,7 @@ async def on_ready():
     await SqlUtils.enter_message(0, "NULL", "system", env["DEFAULT_CONTEXT"])
 
 
-def is_image_prompt(text_prompt):
+"""def is_image_prompt(text_prompt):
     # returns whether or not the prompt is an image prompt
     if text_prompt.startswith(IMAGE_PROMPT):
         return True
@@ -446,7 +446,7 @@ def is_image_prompt(text_prompt):
         for i in [i.replace("-", " ") for i in STABILITY_STYLE_PRESETS]:
             if text_prompt.startswith(i):
                 return True
-    return False
+    return False"""
 
 
 # on message event
@@ -469,12 +469,12 @@ async def on_message(message: discord.Message):
     # test to see if bot is mentioned (for images)
     if client.user in message.mentions:
         # see if images are enabled
-        if is_image_prompt(prompt) and env["ALLOW_IMAGES"]:
+        """if is_image_prompt(prompt) and env["ALLOW_IMAGES"]:
             # get image
             file = await get_image(prompt)
             # send message
             await message.reply(prompt, file=file)
-            return
+            return"""
         if env["STORE_LOCALLY"] == "True":
             # see if message is setting a context
             if prompt.lower().startswith(env["CONTEXT_PROMPT"]):
