@@ -11,7 +11,9 @@ import time
 import os
 from dotenv import load_dotenv
 import base64
-
+from discord.ext import commands
+from discord import app_commands
+import datetime
 
 mount_point = "./chippy_data"
 
@@ -27,6 +29,7 @@ env = os.environ
 # set up discord
 intents = discord.Intents.all()
 client = discord.Client(intents=intents)
+bot = commands.Bot(command_prefix='!', intents=intents, application_id=env["APPLICATION_ID"])
 
 # set up openai
 openai.api_key = env["OPENAI_TOKEN"]
@@ -54,6 +57,42 @@ STABILITY_STYLE_PRESETS = [
 
 # CLASSES
 
+@bot.tree.command(name='summarize', description='Summarize messages from a specific channel over a given duration.')
+@app_commands.describe(channel='The channel to summarize messages from', duration='Duration in hours to look back for messages')
+async def summarize(interaction: discord.Interaction, channel: discord.abc.GuildChannel, duration: int):
+    # Ensure the duration is positive
+    if duration <= 0:
+        await interaction.response.send_message("Duration must be a positive number of hours.", ephemeral=True)
+        return
+    
+    # Calculate the time range for message fetching
+    after_time = discord.utils.utcnow() - datetime.timedelta(hours=duration)
+
+    # Fetch messages - Ensure your bot has permissions to read message history in the channel
+    messages = await channel.history(limit=100, after=after_time).flatten()  # Adjust the limit as needed
+
+    # Check if messages were found
+    if not messages:
+        await interaction.response.send_message("No messages found in the specified duration.", ephemeral=True)
+        return
+
+    # Format messages for GPT-3.5
+    formatted_messages = []
+    for msg in messages:
+        # Format each message with timestamp and author name for context
+        formatted_message = f"{msg.created_at.strftime('%Y-%m-%d %H:%M:%S')} {msg.author.display_name}: {msg.content}"
+        formatted_messages.append({"role": "user", "content": formatted_message})
+    
+    # Instruction for GPT-3.5
+    prompt = "Summarize the following conversation:"
+    formatted_messages.insert(0, {"role": "system", "content": prompt})
+
+    # Call GPT-3.5 for summarization
+    summary = await chat_completion(formatted_messages)
+
+    # Send the summary as a response
+    await interaction.response.send_message(summary[:2000])  # Ensure response does not exceed 2000 characters
+    
 
 # this class represents a database connection
 class Database:
@@ -436,6 +475,8 @@ async def on_ready():
     await SqlUtils.create_database()
     # set default context
     await SqlUtils.enter_message(0, "NULL", "system", env["DEFAULT_CONTEXT"])
+    await bot.tree.sync()
+    print(f'{bot.user} has connected to Discord!')
 
 
 """def is_image_prompt(text_prompt):

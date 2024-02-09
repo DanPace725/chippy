@@ -1,12 +1,15 @@
-# fly.toml app configuration file generated for chippy-demo on 2023-11-13T16:52:54-08:00
+# fly.toml app configuration file generated for gandalf02 on 2024-02-09T11:44:12-08:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "gandalf02"
-primary_region = "sea"
+app = 'gandalf02'
+primary_region = 'sea'
 
-[mounts]
-  source = "chippy_data"
-  destination = "chippy_data"
-  
+[build]
+
+[[mounts]]
+  source = 'chippy_data'
+  destination = 'chippy_data'
+
+
