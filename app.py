@@ -1,5 +1,4 @@
-# Chippy v2.0
-# By kahnpoint (Adam Kahn)
+
 # https://g%%%ithub.com/kahnpoint/chippy
 # Released under the MIT License
 
@@ -29,7 +28,8 @@ env = os.environ
 # set up discord
 intents = discord.Intents.all()
 client = discord.Client(intents=intents)
-bot = commands.Bot(command_prefix='!', intents=intents, application_id=env["APPLICATION_ID"])
+applicaation_id = env["APPLICATION_ID"]
+bot = commands.Bot(command_prefix='/', intents=intents, application_id=applicaation_id)
 
 # set up openai
 openai.api_key = env["OPENAI_TOKEN"]
@@ -471,11 +471,16 @@ async def store_locally(message):
 # standard discord bot startup function
 @client.event
 async def on_ready():
+    application_id = env["APPLICATION_ID"]
+    guild_id = env["GUILD_ID"]  # Replace YOUR_GUILD_ID with the actual guild ID as an integer
+    guild = discord.Object(id=guild_id)
     print(f"{client.user.display_name} is online")
+    await bot.tree.sync(guild=guild)
+
     await SqlUtils.create_database()
     # set default context
     await SqlUtils.enter_message(0, "NULL", "system", env["DEFAULT_CONTEXT"])
-    await bot.tree.sync()
+    
     print(f'{bot.user} has connected to Discord!')
 
 
